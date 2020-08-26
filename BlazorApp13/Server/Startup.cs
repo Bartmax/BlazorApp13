@@ -13,6 +13,9 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using BlazorApp13.Server.Data;
 using BlazorApp13.Server.Models;
+using IdentityModel;
+using OpenIddict.Abstractions;
+using OpenIddict.Server.AspNetCore;
 
 namespace BlazorApp13.Server
 {
@@ -30,17 +33,59 @@ namespace BlazorApp13.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
+            {
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"));
+                options.UseOpenIddict();
+            });
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
             services.AddAuthentication()
+                .AddOpenIdConnect()
                 .AddIdentityServerJwt();
+
+            services.AddOpenIddict(config =>
+            {
+                config.AddCore(options =>
+                {
+                    options.UseEntityFrameworkCore(config => { config.UseDbContext<ApplicationDbContext>(); });
+                })
+                .AddServer(options =>
+                {
+                    options.AddDevelopmentEncryptionCertificate();
+                    options.AddDevelopmentSigningCertificate();
+
+                    options.AllowAuthorizationCodeFlow();
+                    options.AllowRefreshTokenFlow();
+
+                    options.RegisterScopes(OpenIddictConstants.Scopes.Email, OpenIddictConstants.Scopes.Profile, OpenIddictConstants.Scopes.Roles);
+
+                    options.SetTokenEndpointUris("/connect/token");
+                    options.SetAuthorizationEndpointUris("/connect/authorize");
+                    options.SetUserinfoEndpointUris("/connect/userinfo");
+                    options.SetLogoutEndpointUris("/connect/logout");
+
+                    options.UseAspNetCore(options =>
+                    {
+                        options.EnableAuthorizationEndpointPassthrough();
+                        options.EnableLogoutEndpointPassthrough();
+                        options.EnableTokenEndpointPassthrough();
+                        options.EnableStatusCodePagesIntegration();
+
+                    });
+                })
+                .AddValidation(options =>
+                {
+                    options.UseLocalServer();
+
+                });
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
