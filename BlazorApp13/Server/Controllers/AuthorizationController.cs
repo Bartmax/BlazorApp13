@@ -283,7 +283,7 @@ namespace BlazorApp13.Server.Controllers
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [Authorize(AuthenticationSchemes = "Identity.Application"), FormValueRequired("submit.Accept")]
+        [Authorize(AuthenticationSchemes = "Identity.Application"), FormValueRequired("submit.Deny")]
         [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
         // Notify OpenIddict that the authorization grant has been denied by the resource owner
         // to redirect the user agent to the client application using the appropriate response_mode.

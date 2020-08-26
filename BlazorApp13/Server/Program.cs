@@ -60,9 +60,13 @@ namespace BlazorApp13.Server
                             OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
                             OpenIddictConstants.Permissions.Scopes.Email,
                             OpenIddictConstants.Permissions.Scopes.Profile,
-                            OpenIddictConstants.Permissions.Scopes.Roles,
+                            OpenIddictConstants.Permissions.Scopes.Roles
+                        },
+                        Requirements =
+                        {
                             OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange
                         }
+
                     };
 
                     await applicationManager.CreateAsync(descriptor);
