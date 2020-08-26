@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.1" />
     <PackageReference Include="OpenIddict" Version="3.0.0-beta3.20403.69" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="3.0.0-beta3.20403.69" />
-    <PackageReference Include="OpenIddict.Server.AspNetCore" Version="3.0.0-beta3.20403.69" />
+    <PackageReference Include="OpenIddict.AspNetCore" Version="3.0.0-beta3.20403.69" />
   </ItemGroup>
 
   <ItemGroup>
