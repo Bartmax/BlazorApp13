@@ -9,6 +9,7 @@ using BlazorApp13.Server.Data;
 using BlazorApp13.Server.Models;
 using OpenIddict.Abstractions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using OpenIddict.Validation.AspNetCore;
 
 namespace BlazorApp13.Server
 {
@@ -43,7 +44,12 @@ namespace BlazorApp13.Server
                 options.ClaimsIdentity.RoleClaimType = Claims.Role;
             });
 
-            services.AddAuthentication();
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                opt.DefaultForbidScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            });
 
             services.AddOpenIddict(config =>
             {
@@ -77,6 +83,7 @@ namespace BlazorApp13.Server
                 })
                 .AddValidation(options =>
                 {
+                    options.UseAspNetCore();
                     options.UseLocalServer();
 
                 });
