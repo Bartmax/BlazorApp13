@@ -28,8 +28,12 @@ namespace BlazorApp13.Server
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"));
+                // Configure the context to use Microsoft SQL Server.
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+
+                // Register the entity sets needed by OpenIddict.
+                // Note: use the generic overload if you need
+                // to replace the default OpenIddict entities.
                 options.UseOpenIddict();
             });
 
@@ -37,6 +41,9 @@ namespace BlazorApp13.Server
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            // Configure Identity to use the same JWT claims as OpenIddict instead
+            // of the legacy WS-Federation claims it uses by default (ClaimTypes),
+            // which saves you from doing the mapping in your authorization controller.
             services.Configure<IdentityOptions>(options =>
             {
                 options.ClaimsIdentity.UserNameClaimType = Claims.Name;
@@ -44,12 +51,13 @@ namespace BlazorApp13.Server
                 options.ClaimsIdentity.RoleClaimType = Claims.Role;
             });
 
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-                opt.DefaultForbidScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-            });
+            services.AddAuthentication();
+            //services.AddAuthentication(opt =>
+            //{
+            //    opt.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            //    opt.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            //    opt.DefaultForbidScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            //});
 
             services.AddOpenIddict(config =>
             {

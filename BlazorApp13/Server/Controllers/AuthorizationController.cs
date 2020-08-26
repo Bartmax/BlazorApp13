@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using OpenIddict.Server.AspNetCore;
 using BlazorApp13.Server.Helpers;
 using BlazorApp13.Server.Models;
-using static OpenIddict.Abstractions.OpenIddictConstants;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using BlazorApp13.Server.ViewModels.Authorization;
 
 namespace BlazorApp13.Server.Controllers
 {
@@ -205,11 +205,15 @@ namespace BlazorApp13.Server.Controllers
 
                 // In every other case, render the consent form.
                 default:
-                    throw new NotImplementedException("Consent form not implemented");
+                    return View(new AuthorizeViewModel
+                    {
+                        ApplicationName = await _applicationManager.GetDisplayNameAsync(application),
+                        Scope = request.Scope
+                    });
             }
         }
 
-        [Authorize, FormValueRequired("submit.Accept")]
+        [Authorize(AuthenticationSchemes = "Identity.Application"), FormValueRequired("submit.Accept")]
         [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
         public async Task<IActionResult> Accept()
         {
@@ -279,14 +283,14 @@ namespace BlazorApp13.Server.Controllers
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [Authorize, FormValueRequired("submit.Deny")]
+        [Authorize(AuthenticationSchemes = "Identity.Application"), FormValueRequired("submit.Accept")]
         [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
         // Notify OpenIddict that the authorization grant has been denied by the resource owner
         // to redirect the user agent to the client application using the appropriate response_mode.
         public IActionResult Deny() => Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
         [HttpGet("~/connect/logout")]
-        public IActionResult Logout() => RedirectToPage("/Logout");
+        public IActionResult Logout() => View();
 
         [ActionName(nameof(Logout)), HttpPost("~/connect/logout"), ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutPost()

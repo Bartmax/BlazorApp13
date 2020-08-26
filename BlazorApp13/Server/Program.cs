@@ -42,7 +42,6 @@ namespace BlazorApp13.Server
             var app = await applicationManager.FindByClientIdAsync(clientId);
             if (app is null)
             {
-
                 if (await applicationManager.FindByClientIdAsync(clientId) is null)
                 {
                     var descriptor = new OpenIddictApplicationDescriptor
@@ -51,7 +50,7 @@ namespace BlazorApp13.Server
                         DisplayName = "Blazor App 13",
                         RedirectUris = { new Uri($"{HOSTNAME}/authentication/login-callback") },
                         PostLogoutRedirectUris = { new Uri($"{HOSTNAME}/authentication/logout-callback") },
-                        ConsentType = OpenIddictConstants.ConsentTypes.Implicit,
+                        //ConsentType = OpenIddictConstants.ConsentTypes.Implicit,
                         Permissions =
                         {
                             OpenIddictConstants.Permissions.Endpoints.Authorization,
