@@ -17,6 +17,7 @@ using OpenIddict.Server.AspNetCore;
 using BlazorApp13.Server.Helpers;
 using BlazorApp13.Server.Models;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BlazorApp13.Server.Controllers
 {
@@ -285,7 +286,7 @@ namespace BlazorApp13.Server.Controllers
         public IActionResult Deny() => Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
         [HttpGet("~/connect/logout")]
-        public IActionResult Logout() => View();
+        public IActionResult Logout() => RedirectToPage("/Logout");
 
         [ActionName(nameof(Logout)), HttpPost("~/connect/logout"), ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutPost()
